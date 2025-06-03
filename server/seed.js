@@ -8,7 +8,7 @@ const q = `
   VALUES (?, ?, ?, ?)
 `;
 
-db.query(q, ["Test User", "mail@mail.com", hashedPassword, "user"], (err, result) => {
+db.query(q, ["Super Admin", "sa@mail.com", hashedPassword, "sa"], (err, result) => {
   if (err) {
     console.error("❌ Seeder Error:", err);
   } else {
