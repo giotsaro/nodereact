@@ -55,7 +55,10 @@ app.use("/api/online", onlineRouter);
 driverInsuranceCron(io);
 
 
-
+app.use((req, res, next) => {
+    console.log(`Request from IP: ${req.ip}`);
+    next();
+});
 
 
 // Socket.IO connection
