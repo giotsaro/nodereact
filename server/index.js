@@ -46,12 +46,6 @@ app.get("/", (req, res) => {
 });
 
 
-app.use((req, res, next) => {
-    console.log(`Request from IP: ${req.ip}`);
-    console.log(`Origin: ${req.headers.origin}`);
- 
-    next();
-});
 
 
 app.use("/api/auth", authRoutes);
