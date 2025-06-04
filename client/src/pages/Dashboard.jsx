@@ -8,21 +8,14 @@ import { toast } from 'sonner';
 
 
 
-
-
-
-
-
 const Dashboard = () => {
 
  
 
-
-
   const { role } = useAuth();
   const navigate = useNavigate();
-  const [carriers, setCarriers] = useState([]);
-  const [selectedCarrier, setSelectedCarrier] = useState(null);
+  const [drivers, setDrivers] = useState([]);
+  const [selectedDriver, setSelectedDriver] = useState(null);
   const [isModalOpen, setIsModalOpen] = useState(false);
   const [error, setError] = useState(false);
   const [zipError, setZipError] = useState("");
@@ -46,11 +39,11 @@ const Dashboard = () => {
   const [debouncedFilters, setDebouncedFilters] = useState({});
   const [groupsList, setGroupsList] = useState([]);
 
-const fetchCarriers = useCallback(async () => {
+const fetchDrivers = useCallback(async () => {
   try {
     setLoading(true);
     const res = await API.get("/dashboard");
-    setCarriers(res.data);
+    setDrivers(res.data);
   } catch (err) {
     if (err.response?.status) {
       navigate("/login");
@@ -79,15 +72,15 @@ const formatDateForInput = (dateStr) => {
 };
 
 // მოდალის გამხსნელი
-const openModal = (carrier) => {
-  setSelectedCarrier({
-    ...carrier,
-    date: carrier.date ? formatDateForInput(carrier.date) : "",
+const openModal = (dirver) => {
+  setSelectedDriver({
+    ...dirver,
+    date: dirver.date ? formatDateForInput(dirver.date) : "",
   });
   setIsModalOpen(true);
 };
  const closeModal = () => {
-  setSelectedCarrier(null);
+  setSelectedDriver(null);
   setIsModalOpen(false);
   setZipError("");
   setError(false);
@@ -98,15 +91,15 @@ const openModal = (carrier) => {
   try {
     setZipError("");
     setError(false);
-    await API.put(`/dashboard/${selectedCarrier.id}`, {
-      zip: selectedCarrier.zip,
-      date: selectedCarrier.date,
-      comments: selectedCarrier.comments,
-      onload: selectedCarrier.onload ? 1 : 0,
-      available: selectedCarrier.available ? 1 : 0,
+    await API.put(`/dashboard/${selectedDriver.id}`, {
+      zip: selectedDriver.zip,
+      date: selectedDriver.date,
+      comments: selectedDriver.comments,
+      onload: selectedDriver.onload ? 1 : 0,
+      available: selectedDriver.available ? 1 : 0,
     });
-    closeModal();  // აქ უკვე ასუფთავებს selectedCarrier-ს და სხვა ველებს
-    fetchCarriers();
+    closeModal();  // აქ უკვე ასუფთავებს selectedDriver-ს და სხვა ველებს
+    fetchDrivers();
   } catch (err) {
     if (err.response?.status === 400 && err.response.data.message?.toLowerCase().includes("zip")) {
       setZipError("Invalid ZIP code");
@@ -122,12 +115,12 @@ const openModal = (carrier) => {
 };
 
 
-  const handleReserve = async (carrierId) => {
+  const handleReserve = async (driverId) => {
     try {
-      const res = await API.post("/dashboard/reserve", { carrierId });
+      const res = await API.post("/dashboard/reserve", { driverId });
     
       toast.success(res.data.message);
-      fetchCarriers();
+      fetchDrivers();
     } catch (err) {
       toast.error(err.response?.data?.message || err.message || "Server error");
     }
@@ -164,7 +157,7 @@ const handleClearFilters = () => {
     const loadFilteredData = async () => {
       try {
         const res = await API.get("/dashboard", { params: debouncedFilters });
-        setCarriers(res.data);
+        setDrivers(res.data);
       } catch (err) {
         console.error(err);
       }
@@ -173,10 +166,10 @@ const handleClearFilters = () => {
   }, [debouncedFilters]);
 
   useEffect(() => {
-    fetchCarriers();
-    socket.on("dashboardUpdated", fetchCarriers);
-    return () => socket.off("dashboardUpdated", fetchCarriers);
-  }, [fetchCarriers]);
+    fetchDrivers();
+    socket.on("dashboardUpdated", fetchDrivers);
+    return () => socket.off("dashboardUpdated", fetchDrivers);
+  }, [fetchDrivers]);
 
   useEffect(() => {
     if (isModalOpen) {
@@ -221,7 +214,7 @@ useEffect(() => {
 
   window.addEventListener("keydown", handleKeyDown);
   return () => window.removeEventListener("keydown", handleKeyDown);
-}, [isModalOpen, selectedCarrier]); // დამოკიდებულია მოდალზე
+}, [isModalOpen, selectedDriver]); // დამოკიდებულია მოდალზე
 
 
 
@@ -334,7 +327,7 @@ useEffect(() => {
 
     
       <div className="mb-4 text-lg font-medium">
-        Total Carriers: {carriers.length}
+        Total Drivers: {drivers.length}
       </div>
     
       <div className="overflow-x-visible ">
@@ -342,8 +335,8 @@ useEffect(() => {
           <thead>
             <tr className="bg-blue-500 dark:bg-gray-700 text-white">
               <th className="p-3 text-center">Unit</th>
-              <th className="p-3 text-center">Carrier</th>
-              <th className="p-3 text-center">Capacity</th>
+              <th className="p-3 text-center">Driver</th>
+              <th className="p-3 text-center">Details</th>
             
 
               
@@ -363,30 +356,33 @@ useEffect(() => {
           </thead>
           <tbody className="divide-y  divide-gray-200 dark:divide-gray-800">
 
-            {loading && <p>Loading carriers...</p>}
+            {loading && <tr><td>Loading drivers...</td></tr>}
 
-            {carriers.map((carrier) => (
+            {drivers.map((driver) => (
               <tr
-                key={carrier.id}
+                key={driver.id}
                 className={`transition-all ${
-                  carrier.reserved_by
+                  driver.reserved_by
                     ? "bg-yellow-600 dark:bg-yellow-700 dark:hover:bg-yellow-600"
                     : "dark:bg-gray-700"
                 } border-t dark:border-gray-800 text-gray-800 dark:text-gray-100 hover:bg-gray-400 dark:hover:bg-gray-600`}
               >
-                <td className="p-2">{carrier.unit}</td>
+                <td className="p-2">{driver.unit}</td>
                 <td className="p-2">
-                  <p>{carrier.name}</p> <p> <button 
-    onClick={() => handlePhoneCall(carrier.phone)}
+                  <p>{driver.name}</p> <p> <button 
+    onClick={() => handlePhoneCall(driver.phone)}
     className="text-blue-600 hover:text-blue-800 hover:underline"
   >
-    {carrier.phone}
+    {driver.phone}
   </button> </p>
-                  <p>{carrier.email}</p>
+                  <p>{driver.email}</p>
   
   </td>
-                <td className="p-3 "><p> Dimensions: {carrier.dimensions} </p>
-                  <p>payload: {carrier.payload}</p></td>
+                <td className="p-3 "> <p> Dimensions: <strong>{driver.dimensions} </strong></p>
+                 <p> payload: <strong>{driver.payload}</strong></p>
+                 <p>  license plate: <strong> {driver.license_plate}</strong></p>
+                  
+                  </td>
                 
 
                 
@@ -395,84 +391,98 @@ useEffect(() => {
                   
                 
       <a
-        href={`https://www.google.com/maps?q=${carrier.latitude},${carrier.longitude}`}
+        href={`https://www.google.com/maps?q=${driver.latitude},${driver.longitude}`}
         target="_blank"
         rel="noopener noreferrer"
         className="text-blue-600 hover:underline dark:text-blue-400"
       ><p>ZIP</p>
         </a>
-        <p> {carrier.zip}</p>                   
-        <p>{carrier.location}</p></td>
+        <p> {driver.zip}</p>                   
+        <p>{driver.location}</p></td>
+        
 
 
-        <td className="p-2">{carrier.date}</td>
+        <td className="p-2">{driver.date}</td>
         <td className="p-2">
           {/* Availability */}
           <span
             className={`text-xs font-semibold px-2.5 py-0.5 rounded ${
-              carrier.available ? "bg-green-500 text-white-800" : "bg-red-500 text-white"
+              driver.available ? "bg-green-500 text-white-800" : "bg-red-500 text-white"
             }`}
           >
-            {carrier.available ? "Available" : "Unavailable"}
+            {driver.available ? "Available" : "Unavailable"}
           </span>
           
           {/* Load status */}
           <span
             className={`text-xs font-semibold px-2.5 py-0.5 rounded mt-1 ${
-              carrier.onload ? "bg-amber-200 text-orange-500" : "bg-green-500 text-white"
+              driver.onload ? "bg-amber-200 text-orange-500" : "bg-green-500 text-white"
             }`}
           >
-            {carrier.onload ? "Onload" : "Free"}
+            {driver.onload ? "Onload" : "Free"}
           </span>
           
         {/* Insurance Expiration */}
         <p className={`text-xs font-semibold px-2.5 py-0.5 rounded mt-1 ${
-          carrier.ins_exp ? "bg-red-500 text-white" : "bg-green-500 text-white"
+          driver.ins_exp ? "bg-red-500 text-white" : "bg-green-500 text-white"
         }`}>
-          ins.exp Date
+          Insurance <span className={`text-xs font-semibold px-2.5 py-0.5 rounded mt-1 ${
+          driver.ins_exp ? "bg-red-500 text-white" : "bg-green-500 text-white"
+        }`}>
+          {driver.insurance_date ? driver.insurance_date : "unknown"}
+        </span>
         </p>
         
+       
+       {/* Insurance Expiration */}
         <p className={`text-xs font-semibold px-2.5 py-0.5 rounded mt-1 ${
-          carrier.ins_exp ? "bg-red-500 text-white" : "bg-green-500 text-white"
+          driver.reg_exp ? "bg-red-500 text-white" : "bg-green-500 text-white"
         }`}>
-          {carrier.insurance_date ? carrier.insurance_date : "unknown"}
+          Registration <span className={`text-xs font-semibold px-2.5 py-0.5 rounded mt-1 ${
+          driver.reg_exp ? "bg-red-500 text-white" : "bg-green-500 text-white"
+        }`}>
+          {driver.registration_date ? driver.registration_date : "unknown"}
+        </span>
         </p>
+
+
+
         </td>
-                <td className="p-2">{carrier.comments}</td>
-                <td className="p-2">{carrier.emergency}</td>
+                <td className="p-2">{driver.comments}</td>
+                <td className="p-2">{driver.emergency}</td>
                  {(role === "admin" || role === "sa") && (
                               <td>
-                      {carrier.groups?.length > 0
-                        ? carrier.groups.map(group => group.name).join(", ")
+                      {driver.groups?.length > 0
+                        ? driver.groups.map(group => group.name).join(", ")
                         : "No groups"}
                     </td>
 
                                  )}
-                <td className="p-2">{carrier.distance}</td>
+                <td className="p-2">{driver.distance}</td>
                 <td className="p-2 space-y-1">
                   <button
-                    onClick={() => openModal(carrier)}
+                    onClick={() => openModal(driver)}
                     className="text-blue-600 hover:text-blue-800 px-2 py-1 font-medium block w-full text-left"
                   >
                     Edit
                   </button>
                   <button
-                    onClick={() => handleReserve(carrier.id)}
+                    onClick={() => handleReserve(driver.id)}
                     className={`${
-                      carrier.reserved_by 
+                      driver.reserved_by 
                         ? "text-red-600 hover:text-red-800" 
                         : "text-green-600 hover:text-green-800"
                     } px-2 py-1 font-medium block w-full text-left`}
                   >
-                    {carrier.reserved_by ? "Cancel" : "Reserve"}
+                    {driver.reserved_by ? "Cancel" : "Reserve"}
                   </button>
-                  {carrier.reserved_by && (
+                  {driver.reserved_by && (
                     <div className="mt-1 text-sm text-green-800 dark:text-green-300">
                       <div>
                         <strong>Reserved by: </strong>
-                        {carrier.reserved_by_name || "Unknown"}
+                        {driver.reserved_by_name || "Unknown"}
                       </div>
-                      <Timer startTime={carrier.reserved_at} />
+                      <Timer startTime={driver.reserved_at} />
                     </div>
                   )}
                 </td>
@@ -483,7 +493,7 @@ useEffect(() => {
       </div>
     
       {/* Modal */}
-      {isModalOpen && selectedCarrier && (
+      {isModalOpen && selectedDriver && (
         <div
   className="fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center z-50"
   onClick={closeModal}
@@ -509,7 +519,7 @@ useEffect(() => {
           location:
         </label>
         <p className="bg-gray-100 dark:bg-gray-700 dark:text-white">
-          {selectedCarrier.location}
+          {selectedDriver.location}
         </p>
       </div>
 
@@ -517,9 +527,9 @@ useEffect(() => {
         <label className="block mb-1 text-sm font-medium">ZIP:</label>
         <input
           type="text"
-          value={selectedCarrier.zip}
+          value={selectedDriver.zip}
           onChange={(e) => {
-            setSelectedCarrier({ ...selectedCarrier, zip: e.target.value });
+            setSelectedDriver({ ...selectedDriver, zip: e.target.value });
             setZipError(""); // reset ZIP error on typing
           }}
           className={`w-full p-2 border rounded bg-gray-100 dark:bg-gray-700 dark:text-white ${
@@ -542,8 +552,8 @@ useEffect(() => {
                 <label className="block mb-1 text-sm font-medium">Date and Time:</label>
            <input
             type="datetime-local"
-            value={selectedCarrier.date }
-            onChange={(e) => setSelectedCarrier({ ...selectedCarrier, date: e.target.value })}
+            value={selectedDriver.date }
+            onChange={(e) => setSelectedDriver({ ...selectedDriver, date: e.target.value })}
             className="w-full p-2 border rounded bg-gray-100 dark:bg-gray-700 dark:text-white"
           />
 
@@ -556,11 +566,11 @@ useEffect(() => {
     <div className="relative">
       <input
         type="checkbox"
-        checked={selectedCarrier.onload === 1}
+        checked={selectedDriver.onload === 1}
         onChange={() => {
-          setSelectedCarrier({
+          setSelectedDriver({
             ...selectedCarrier,
-            onload: selectedCarrier.onload === 1 ? 0 : 1,
+            onload: selectedDriver.onload === 1 ? 0 : 1,
           });
         }}
         className="sr-only"
@@ -568,16 +578,16 @@ useEffect(() => {
       />
       <div
         className={`w-10 h-5 rounded-full shadow-inner transition-colors duration-300 ${
-          selectedCarrier.onload === 1 ? "bg-amber-400" : "bg-green-500"
+          selectedDriver.onload === 1 ? "bg-amber-400" : "bg-green-500"
         }`}
       ></div>
       <div
         className={`dot absolute left-0 top-0 w-5 h-5 bg-white rounded-full shadow transform transition-transform duration-300 ${
-          selectedCarrier.onload === 1 ? "translate-x-full" : ""
+          selectedDriver.onload === 1 ? "translate-x-full" : ""
         }`}
       ></div>
     </div>
-    <span className="text-sm">{selectedCarrier.onload === 1 ? "Yes" : "No"}</span>
+    <span className="text-sm">{selectedDriver.onload === 1 ? "Yes" : "No"}</span>
   </label>
 
   {/* unavailable switch */}
@@ -586,11 +596,11 @@ useEffect(() => {
     <div className="relative">
       <input
         type="checkbox"
-        checked={selectedCarrier.available === 0}
+        checked={selectedDriver.available === 0}
         onChange={() => {
-          setSelectedCarrier({
-            ...selectedCarrier,
-            available: selectedCarrier.available === 0 ? 1 : 0,
+          setSelectedDriver({
+            ...selectedDriver,
+            available: selectedDriver.available === 0 ? 1 : 0,
           });
         }}
         className="sr-only"
@@ -598,16 +608,16 @@ useEffect(() => {
       />
       <div
         className={`w-10 h-5 rounded-full shadow-inner transition-colors duration-300 ${
-          selectedCarrier.available === 0 ? "bg-red-500" : "bg-green-500"
+          selectedDriver.available === 0 ? "bg-red-500" : "bg-green-500"
         }`}
       ></div>
       <div
         className={`dot absolute left-0 top-0 w-5 h-5 bg-white rounded-full shadow transform transition-transform duration-300 ${
-          selectedCarrier.available === 0 ? "translate-x-full" : ""
+          selectedDriver.available === 0 ? "translate-x-full" : ""
         }`}
       ></div>
     </div>
-    <span className="text-sm">{selectedCarrier.available === 0 ? "Yes" : "No"}</span>
+    <span className="text-sm">{selectedDriver.available === 0 ? "Yes" : "No"}</span>
   </label>
 </div>
 
@@ -620,10 +630,10 @@ useEffect(() => {
         </label>
         <textarea
           rows="3"
-          value={selectedCarrier.comments}
+          value={selectedDriver.comments}
           onChange={(e) =>
-            setSelectedCarrier({
-              ...selectedCarrier,
+            setSelectedDriver({
+              ...selectedDriver,
               comments: e.target.value,
             })
           }

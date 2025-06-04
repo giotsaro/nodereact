@@ -231,6 +231,7 @@ const handleUpdateUser = async () => {
             className="p-2 rounded border border-gray-300 dark:border-gray-600 dark:bg-gray-700"
           >
             <option value="user">User</option>
+            <option value="hr">HR</option>
             <option value="admin">Admin</option>
           </select>
         </div>

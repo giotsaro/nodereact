@@ -4,7 +4,7 @@ import bcrypt from "bcrypt";
 const hashedPassword = bcrypt.hashSync("password", 10);
 
 const q = `
-  INSERT INTO users (name, email, password, role)
+  INSERT INTO carriers (name, email, password, role)
   VALUES (?, ?, ?, ?)
 `;
 

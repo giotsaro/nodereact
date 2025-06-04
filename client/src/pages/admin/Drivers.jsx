@@ -4,24 +4,24 @@ import API from "../../api/axios";
 import { toast } from 'sonner'; 
 
 
-const CarriersPage = () => {
-  const [carriers, setCarriers] = useState([]);
+const DriversPage = () => {
+  const [drivers, setDrivers] = useState([]);
   const [groups, setGroups] = useState([]);
   const [selectedGroup, setSelectedGroup] = useState("");
   const [searchTerm, setSearchTerm] = useState("");
 
 
   useEffect(() => {
-    fetchCarriers();
+    fetchDrivers();
     fetchGroups();
   }, []);
 
-  const fetchCarriers = async (groupId = "") => {
+  const fetchDrivers = async (groupId = "") => {
     try {
-      const res = await API.get("/carriers", {
+      const res = await API.get("/drivers", {
         params: groupId ? { group: groupId } : {},
       });
-      setCarriers(res.data);
+      setDrivers(res.data);
     } catch (err) {
       toast.error(err.response?.data?.message || err.message || "Server error");
     }
@@ -39,24 +39,24 @@ const CarriersPage = () => {
   const handleDelete = async (id) => {
     if (window.confirm("are you sure?")) {
       try {
-        await API.delete(`/carriers/${id}`);
-        setCarriers((prev) => prev.filter((carrier) => carrier.id !== id));
+        await API.delete(`/drivers/${id}`);
+        setDrivers((prev) => prev.filter((driver) => driver.id !== id));
       } catch (err) {
         toast.error(err.response?.data?.message || err.message || "Server error");
       }
     }
   };
 
-  const filteredCarriers = carriers.filter((carrier) => {
+  const filteredDrivers = drivers.filter((driver) => {
     const term = searchTerm.toLowerCase();
     return (
-      carrier.unit?.toLowerCase().includes(term) ||
-      carrier.name?.toLowerCase().includes(term) ||
-      carrier.phone?.toLowerCase().includes(term) ||
-      carrier.email?.toLowerCase().includes(term) ||
-      carrier.emergency?.toLowerCase().includes(term) ||
-      carrier.payload?.toLowerCase().includes(term) ||
-      carrier.groups?.some((g) => g.name.toLowerCase().includes(term))
+      driver.unit?.toLowerCase().includes(term) ||
+      driver.name?.toLowerCase().includes(term) ||
+      driver.phone?.toLowerCase().includes(term) ||
+      driver.email?.toLowerCase().includes(term) ||
+      driver.emergency?.toLowerCase().includes(term) ||
+      driver.payload?.toLowerCase().includes(term) ||
+      driver.groups?.some((g) => g.name.toLowerCase().includes(term))
     );
   });
   
@@ -65,12 +65,12 @@ const CarriersPage = () => {
   return (
     <div className="max-w-7xl mx-auto p-6 dark:bg-gray-900 dark:text-white min-h-screen">
       <div className="flex justify-between items-center mb-6 flex-wrap gap-4">
-        <h2 className="text-3xl font-bold">Carriers</h2>
+        <h2 className="text-3xl font-bold">Driver</h2>
         <Link
-          to="/carriers/new"
+          to="/drivers/new"
           className="px-3 py-2 text-xs font-medium text-center inline-flex items-center text-white bg-blue-700 rounded-lg hover:bg-blue-800"
         >
-          Add New Carrier
+          Add New Driver
         </Link>
       </div>
 
@@ -95,7 +95,7 @@ const CarriersPage = () => {
       onChange={(e) => {
         const groupId = e.target.value;
         setSelectedGroup(groupId);
-        fetchCarriers(groupId);
+        fetchDrivers(groupId);
       }}
       className="w-full px-4 py-2 border rounded dark:bg-gray-700 dark:text-white dark:border-gray-600"
     >
@@ -113,17 +113,17 @@ const CarriersPage = () => {
 
 
       <div className="mb-4 text-lg font-medium">
-        სულ გადამზიდავები: {filteredCarriers.length}
+       Drivers: {fetchDrivers.length}
       </div>
 
-      <div className="overflow-x-auto">
-        <table className="min-w-full border-collapse bg-white dark:bg-gray-800">
+      <div className="overflow-x-visible">
+        <table className="w-full table-auto border-collapse text-center bg-gray-300 dark:bg-gray-800">
           <thead className="hidden md:table-header-group">
             <tr className="bg-gray-200 dark:bg-gray-700">
               <th className="p-3 text-center">Unit</th>
               <th className="p-3 text-center">Info</th>
               <th className="p-3 text-center">Address</th>
-              <th className="p-3 text-center">Capacity</th>
+              <th className="p-3 text-center">Details</th>
               <th className="p-3 text-center">Date</th>
               <th className="p-3 text-center">Insurance Date</th>
               <th className="p-3 text-center">Comments</th>
@@ -133,60 +133,69 @@ const CarriersPage = () => {
             </tr>
           </thead>
           <tbody className="block md:table-row-group">
-            {filteredCarriers.map((carrier) => (
+            {filteredDrivers.map((driver) => (
               <tr
-                key={carrier.id}
+                key={driver.id}
                 className="block md:table-row border md:border-none border-gray-200 dark:border-gray-700 mb-4 md:mb-0"
               >
                 <td className="p-2 md:table-cell before:content-['Unit:'] before:block md:before:hidden">
-                  {carrier.unit}
+                  {driver.unit}
                 </td>
 
                 <td className="p-2 md:table-cell before:content-['Info:'] before:block md:before:hidden">
                   <div>
-                    <strong>Name:</strong> {carrier.name}
+                    <strong>Name:</strong> {driver.name}
+                    <hr />
                   </div>
                   <div>
-                    <strong>Phone:</strong> {carrier.phone}
+                    <strong>Phone:</strong> {driver.phone}
+                     <hr />
                   </div>
                   <div>
-                    <strong>Email:</strong> {carrier.email}
+                    <strong>Email:</strong> {driver.email}
+                     <hr />
                   </div>
                 </td>
 
                 <td className="p-2 md:table-cell before:content-['Address:'] before:block md:before:hidden">
                   <div>
-                    <strong>ZIP:</strong> {carrier.zip}
+                    <strong>ZIP:</strong> {driver.zip}
                   </div>
+                   <hr />
                   <div>
-                    <strong>Location:</strong> {carrier.location}
+                    <strong>Location:</strong> {driver.location}
                   </div>
+                   <hr />
                 </td>
 
                 <td className="p-2 md:table-cell before:content-['Capacity:'] before:block md:before:hidden">
                   <div>
-                    <strong>Dimensions:</strong> {carrier.dimensions}
+                    <strong>Dimensions:</strong> {driver.dimensions}
                   </div>
+                   <hr />
                   <div>
-                    <strong>Payload:</strong> {carrier.payload}
+                    <strong>Payload:</strong> {driver.payload}
                   </div>
+                   <hr />
+                  <div>
+                    <strong>License Plat.</strong> {driver.license_plate}
+                  </div>
+                   <hr />
                 </td>
 
                 <td className="p-2 md:table-cell before:content-['Date:'] before:block md:before:hidden">
-                  {new Date(carrier.date).toLocaleString()}
+                  {new Date(driver.date).toLocaleString()}
                 </td>
 
                 <td className="p-2 md:table-cell before:content-['Insurance Date:'] before:block md:before:hidden">
+                   <p>
                   <span
                     className={`${
-                      carrier.ins_exp ? "bg-red-500 text-white" : ""
+                      driver.ins_exp ? "bg-red-500 text-white" : ""
                     }`}
-                  >
-                   
-
-
-                    {carrier.insurance_date ? 
-  new Date(carrier.insurance_date).toLocaleString("en-US", {
+                  >Insurance  date:
+                  {driver.insurance_date ? 
+  new Date(driver.insurance_date).toLocaleString("en-US", {
     month: "2-digit",
     day: "2-digit",
     year: "numeric",
@@ -194,35 +203,61 @@ const CarriersPage = () => {
   }) 
   : "unknown"}
                   </span>
+                  
+                  <hr />
+                  </p>
+                  <p>
+                        <span
+                    className={`${
+                      driver.reg_exp ? "bg-red-500 text-white" : ""
+                    }`}
+                  > registration date: 
+                   
+
+
+                    {driver.registration_date ? 
+  new Date(driver.registration_date).toLocaleString("en-US", {
+    month: "2-digit",
+    day: "2-digit",
+    year: "numeric",
+  
+  }) 
+  : "unknown"}
+                  </span>
+                  </p>
                 </td>
 
                 <td className="p-2 md:table-cell before:content-['Comments:'] before:block md:before:hidden">
-                  {carrier.comments}
+                  {driver.comments}
                 </td>
                 <td className="p-2 md:table-cell before:content-['Emergency:'] before:block md:before:hidden">
-                  {carrier.emergency}
+                  {driver.emergency}
                 </td>
 
                 <td className="p-2 md:table-cell before:content-['Groups:'] before:block md:before:hidden">
-                  {carrier.groups?.length > 0
-                    ? carrier.groups.map((g) => g.name).join(", ")
+                  {driver.groups?.length > 0
+                    ? driver.groups.map((g) => g.name).join(", ")
                     : "No groups"}
                 </td>
 
                 <td className="p-2 md:table-cell before:content-['Actions:'] before:block md:before:hidden">
                   <div className="space-x-2">
+                    <p>
                     <Link
-                      to={`/carriers/${carrier.id}/edit`}
+                      to={`/drivers/${driver.id}/edit`}
                       className="text-yellow-500 hover:text-yellow-400 text-sm font-medium"
                     >
                       Edit
                     </Link>
-                    <button
-                      onClick={() => handleDelete(carrier.id)}
+                    </p>
+                    <p>
+                    <Link
+                      onClick={() => handleDelete(driver.id)}
                       className="text-red-500 hover:text-red-400 text-sm font-medium"
                     >
                       Delete
-                    </button>
+                    </Link>
+                    </p>
                   </div>
                 </td>
               </tr>
@@ -234,4 +269,4 @@ const CarriersPage = () => {
   );
 };
 
-export default CarriersPage;
+export default DriversPage;

@@ -39,13 +39,13 @@ export const updateDashboardFields = async (req, res) => {
   values.push(id);
 
   try {
-    const q = `UPDATE carriers SET ${updates.join(", ")} WHERE id = ?`;
+    const q = `UPDATE drivers SET ${updates.join(", ")} WHERE id = ?`;
     await db.query(q, values);
 
     // Socket.IO-თი აცნობე ცვლილებები
-    io.emit("dashboardUpdated", { updatedFields, carrierId: id });
+    io.emit("dashboardUpdated", { updatedFields, driverId: id });
 
-    res.status(200).json({ message: "Carrier updated successfully!" });
+    res.status(200).json({ message: "Driver updated successfully!" });
   } catch (err) {
     console.error(err);
     res.status(500).json({ message: "Error updating dashboard fields" });
@@ -64,35 +64,35 @@ export const getDashboardData = async (req, res) => {
   const { zip: filterZip, radius, search, group, hideOnLoad, hideUnavailable } = req.query;
 
   try {
-    let carriers;
+    let drivers;
 
     if (userRole === "admin" || userRole === "sa") {
       if (group && group !== "all") {
-        [carriers] = await db.query(
+        [drivers] = await db.query(
           `
           SELECT DISTINCT c.*, u.name AS reserved_by_name
-          FROM carriers c
+          FROM drivers c
           LEFT JOIN users u ON c.reserved_by = u.id
-          JOIN carrier_groups cg ON c.id = cg.carrier_id
+          JOIN drivers_groups cg ON c.id = cg.driver_id
           JOIN groups g ON cg.group_id = g.id
           WHERE g.name = ?
           `,
           [group]
         );
       } else {
-        [carriers] = await db.query(`
+        [drivers] = await db.query(`
           SELECT c.*, u.name AS reserved_by_name 
-          FROM carriers c
+          FROM drivers c
           LEFT JOIN users u ON c.reserved_by = u.id
         `);
       }
     } else {
-      [carriers] = await db.query(
+      [drivers] = await db.query(
         `
         SELECT DISTINCT c.*, u.name AS reserved_by_name 
-        FROM carriers c
+        FROM drivers c
         LEFT JOIN users u ON c.reserved_by = u.id
-        JOIN carrier_groups cg ON c.id = cg.carrier_id
+        JOIN driver_groups cg ON c.id = cg.driver_id
         JOIN user_groups ug ON cg.group_id = ug.group_id
         WHERE ug.user_id = ?
         ${group && group !== "all" ? "AND cg.group_id = (SELECT id FROM groups WHERE name = ?)" : ""}
@@ -105,19 +105,19 @@ export const getDashboardData = async (req, res) => {
     const radiusNumber = Number(radius);
 
     
-carriers = carriers.map((carrier) => {
-  const carrierZipValid = zipcodes.lookup(carrier.zip);
+drivers = drivers.map((driver) => {
+  const driverZipValid = zipcodes.lookup(driver.zip);
   let distance = null;
 
-  if (filterZipValid && carrierZipValid) {
-    distance = zipcodes.distance(filterZip, carrier.zip);
+  if (filterZipValid && driverZipValid) {
+    distance = zipcodes.distance(filterZip, driver.zip);
   }
 
 
     // Format date
   let formattedDate = null;
-  if (carrier.date) {
-    const dateObj = new Date(carrier.date);
+  if (driver.date) {
+    const dateObj = new Date(driver.date);
     formattedDate = dateObj.toLocaleDateString("en-US", {
       month: "2-digit",
       day: "2-digit",
@@ -137,8 +137,8 @@ carriers = carriers.map((carrier) => {
 
   // Format insurance_date
   let formattedInsuranceDate = null;
-  if (carrier.insurance_date) {
-    const dateObj = new Date(carrier.insurance_date);
+  if (driver.insurance_date) {
+    const dateObj = new Date(driver.insurance_date);
     formattedInsuranceDate = dateObj.toLocaleDateString("en-US", {
       year: "numeric",
       month: "2-digit",
@@ -146,48 +146,63 @@ carriers = carriers.map((carrier) => {
     });
   }
 
-  const lat = carrierZipValid?.latitude || null;
-  const lng = carrierZipValid?.longitude || null;
+  // Format regisration_date
+  let formattedRegistrationDate = null;
+  if (driver.registration_date) {
+    const dateObj = new Date(driver.registration_date);
+    formattedRegistrationDate = dateObj.toLocaleDateString("en-US", {
+      year: "numeric",
+      month: "2-digit",
+      day: "2-digit",
+    });
+  }
+
+ // console.log(driver.registration_date, formattedRegistrationDate);
+
+
+  const lat = driverZipValid?.latitude || null;
+  const lng = driverZipValid?.longitude || null;
 
   return {
-    ...carrier,
+    ...driver,
     distance: distance !== null ? distance : Infinity,
      date: formattedDate,
     insurance_date: formattedInsuranceDate,
+    registration_date: formattedRegistrationDate,
     latitude: lat,
     longitude: lng,
   };
 });
 
 
-    // Filter by hideOnLoad if true: exclude carriers where onload = 1
+    // Filter by hideOnLoad if true: exclude drivers where onload = 1
     if (hideOnLoad === "true") {
-      carriers = carriers.filter((carrier) => carrier.onload !== 1);
+      drivers = drivers.filter((driver) => driver.onload !== 1);
     }
 
-    // Filter by hideUnavailable if true: exclude carriers where available = 0
+    // Filter by hideUnavailable if true: exclude drivers where available = 0
     if (hideUnavailable === "true") {
-      carriers = carriers.filter((carrier) => carrier.available !== 0);
+      drivers = drivers.filter((driver) => driver.available !== 0);
     }
 
     // Filter by radius if provided
     if (filterZipValid && radius && !isNaN(radiusNumber)) {
-      carriers = carriers.filter((carrier) => carrier.distance <= radiusNumber);
+      drivers = drivers.filter((driver) => driver.distance <= radiusNumber);
     }
 
     // Sort by distance
-    carriers.sort((a, b) => a.distance - b.distance);
+    drivers.sort((a, b) => a.distance - b.distance);
 
     // Optional search filter
 
       if (search && search.trim() !== "") {
         const searchLower = search.toLowerCase();
-        carriers = carriers.filter((carrier) => {
+        drivers = drivers.filter((driver) => {
           return (
-            carrier.name?.toLowerCase().includes(searchLower) ||
-            carrier.zip?.toString().includes(searchLower) ||
-            carrier.distance?.toString().includes(searchLower) ||
-            carrier.unit?.toLowerCase().includes(searchLower)
+            driver.name?.toLowerCase().includes(searchLower) ||
+            driver.zip?.toString().includes(searchLower) ||
+            driver.distance?.toString().includes(searchLower) ||
+            driver.unit?.toLowerCase().includes(searchLower)
           );
         });
       }
@@ -196,25 +211,25 @@ carriers = carriers.map((carrier) => {
 
 
 
-    // Load associated group names for each carrier
-    for (let carrier of carriers) {
+    // Load associated group names for each driver
+    for (let driver of drivers) {
       const [groupRows] = await db.query(
         `SELECT g.name, g.description 
-         FROM carrier_groups cg 
+         FROM driver_groups cg 
          JOIN groups g ON cg.group_id = g.id 
-         WHERE cg.carrier_id = ?`,
-        [carrier.id]
+         WHERE cg.driver_id = ?`,
+        [driver.id]
       );
-      carrier.groups = groupRows.map((row) => ({
+      driver.groups = groupRows.map((row) => ({
         name: row.name,
         description: row.description,
       }));
     }
 
-    res.json(carriers);
+    res.json(drivers);
   } catch (err) {
     console.error("Error in getDashboardData:", err);
-    res.status(500).json({ message: "Error loading carriers" });
+    res.status(500).json({ message: "Error loading drivers" });
   }
 };
 
@@ -225,34 +240,34 @@ carriers = carriers.map((carrier) => {
 
 
 
-export const reserveCarrier = async (req, res) => {
+export const reserveDriver = async (req, res) => {
   const userId = req.user.id;
   const userRole = req.user.role;
-  const { carrierId } = req.body;
+  const { driverId } = req.body;
 
   try {
     // გადაამოწმე გადამზიდავის სტატუსი
-    const [carrierRows] = await db.query(
-      "SELECT reserved_by FROM carriers WHERE id = ?",
-      [carrierId]
+    const [driverRows] = await db.query(
+      "SELECT reserved_by FROM drivers WHERE id = ?",
+      [driverId]
     );
 
-    if (carrierRows.length === 0) {
-      return res.status(404).json({ message: "Carrier not found" });
+    if (driverRows.length === 0) {
+      return res.status(404).json({ message: "driver not found" });
     }
 
-    const reservedBy = carrierRows[0].reserved_by;
+    const reservedBy = driverRows[0].reserved_by;
 
     // თუ დარეზერვებულია სხვაზე და არც admin/sa ხარ — ვერ დააჯავშნე
     if (reservedBy && reservedBy !== userId && userRole !== "admin" && userRole !== "sa") {
-      return res.status(400).json({ message: "Carrier is already reserved" });
+      return res.status(400).json({ message: "driver is already reserved" });
     }
 
     // თუ დარეზერვებულია იმავე user-ზე ან admin/sa ხარ — გაუქმება
     if (reservedBy && (reservedBy === userId || userRole === "admin" || userRole === "sa")) {
       await db.query(
-        "UPDATE carriers SET reserved_by = NULL, reserved_at = NULL WHERE id = ?",
-        [carrierId]
+        "UPDATE drivers SET reserved_by = NULL, reserved_at = NULL WHERE id = ?",
+        [driverId]
       );
       io.emit("dashboardUpdated");
       return res.status(200).json({ message: "Reservation cancelled" });
@@ -261,17 +276,17 @@ export const reserveCarrier = async (req, res) => {
     // სხვა შემთხვევაში — დაჯავშნა
     const now = new Date();
     await db.query(
-      "UPDATE carriers SET reserved_by = ?, reserved_at = ? WHERE id = ?",
-      [userId, now, carrierId]
+      "UPDATE drivers SET reserved_by = ?, reserved_at = ? WHERE id = ?",
+      [userId, now, driverId]
     );
     io.emit("dashboardUpdated");
-    res.status(200).json({ message: "Carrier reserved successfully!" });
+    res.status(200).json({ message: "driver reserved successfully!" });
 
     // ავტომატური გაუქმება 15 წუთში
     setTimeout(async () => {
       const [checkAgain] = await db.query(
-        "SELECT reserved_by FROM carriers WHERE id = ?",
-        [carrierId]
+        "SELECT reserved_by FROM drivers WHERE id = ?",
+        [driverId]
       );
    
       
@@ -279,16 +294,16 @@ export const reserveCarrier = async (req, res) => {
       // თუ ისევ იმავე user-ზეა, გააუქმე
       if (checkAgain[0].reserved_by === userId) {
         await db.query(
-          "UPDATE carriers SET reserved_by = NULL, reserved_at = NULL WHERE id = ?",
-          [carrierId]
+          "UPDATE drivers SET reserved_by = NULL, reserved_at = NULL WHERE id = ?",
+          [driverId]
         );
         io.emit("dashboardUpdated");
       }
     }, 15 * 60 * 1000);
     
   } catch (err) {
-    console.error("Error reserving carrier:", err);
-    res.status(500).json({ message: "Failed to reserve carrier" });
+    console.error("Error reserving driver:", err);
+    res.status(500).json({ message: "Failed to reserve driver" });
   }
 };
 

@@ -6,10 +6,10 @@ import dotenv from "dotenv";
 import cookieParser from "cookie-parser";
 import authRoutes from "./routes/authRoutes.js";
 import UsersRouter from "./routes/UsersRouter.js";
-import carrierRouter from "./routes/carrierRouter.js";
+import driverRouter from "./routes/driverRouter.js";
 import dashboardRouter from "./routes/dashboardRouter.js";
 import groupRouter from "./routes/groupRouter.js";
-import carrierInsuranceCron from "./cron/carrierInsurance.js";
+import driverInsuranceCron from "./cron/driverInsurance.js";
 import onlineRouter from "./routes/onlineRouter.js";
 
 
@@ -47,12 +47,12 @@ app.get("/", (req, res) => {
 
 app.use("/api/auth", authRoutes);
 app.use("/api/users", UsersRouter);
-app.use("/api/carriers", carrierRouter);
+app.use("/api/drivers", driverRouter);
 app.use("/api/dashboard", dashboardRouter);
 app.use("/api/groups",groupRouter );
 app.use("/api/online", onlineRouter);
 
-carrierInsuranceCron(io);
+driverInsuranceCron(io);
 
 
 

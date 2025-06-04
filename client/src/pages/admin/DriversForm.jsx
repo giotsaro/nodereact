@@ -3,17 +3,19 @@ import { Link, useNavigate } from "react-router-dom";
 import API from "../../api/axios";
 import { toast } from "sonner";
 
-const CarrierForm = ({ onSubmit, initialData = {}, isEditing = false }) => {
+const DriverForm = ({ onSubmit, initialData = {}, isEditing = false }) => {
   const [formData, setFormData] = useState({
     unit: "",
     name: "",
     dimensions: "",
     payload: "",
+    license_plate: "",
     phone: "",
     location: "",
     zip: "",
     date: "",
     insurance_date: "",
+    registration_date: "",
     comments: "",
     email: "",
     emergency: "",
@@ -21,7 +23,7 @@ const CarrierForm = ({ onSubmit, initialData = {}, isEditing = false }) => {
   });
   const navigate = useNavigate();
 
-  const [carriers, setCarriers] = useState([]);
+  const [drivers, setDrivers] = useState([]);
   const [groups, setGroups] = useState([]);
 
   useEffect(() => {
@@ -51,47 +53,47 @@ const CarrierForm = ({ onSubmit, initialData = {}, isEditing = false }) => {
     setFormData((prev) => ({ ...prev, [name]: value }));
   };
 
- const handleAddCarrier = async (newCarrier) => {
-  if (!newCarrier.unit || !newCarrier.name || !newCarrier.phone) {
+ const handleAddDriver = async (newDriver) => {
+  if (!newDriver.unit || !newDriver.name || !newDriver.phone) {
      toast.error("'unit', 'name' და 'phone' is required");
     return;
   }
 
   try {
-    const res = await API.post("/carriers", newCarrier);
-    setCarriers((prev) => [...prev, { ...newCarrier, id: res.data.id }]);
-    toast.success("successfully added new carrier");
-    navigate("/carriers"); // გადამისამართება გადამზიდავების სიაში
+    const res = await API.post("/drivers", newDriver);
+    setDrivers((prev) => [...prev, { ...newDriver, id: res.data.id }]);
+    toast.success("successfully added new driver");
+    navigate("/drivers"); // გადამისამართება გადამზიდავების სიაში
   } catch (err) {
-    toast.error(err.response?.data?.message || err.message || "error adding carrier");
+    toast.error(err.response?.data?.message || err.message || "error adding driver");
   }
 };
 
 
-const handleUpdateCarrier = async (id, updatedCarrier) => {
-  if (!updatedCarrier.unit || !updatedCarrier.name || !updatedCarrier.phone) {
+const handleUpdateDriver = async (id, updatedDriver) => {
+  if (!updatedDriver.unit || !updatedDriver.name || !updatedDriver.phone) {
     toast.error("'unit', 'name' და 'phone' is required");
     return;
   }
 
   try {
-    await API.put(`/carriers/${id}`, updatedCarrier);
-    setCarriers((prev) =>
-      prev.map((carrier) => (carrier.id === id ? { ...carrier, ...updatedCarrier } : carrier))
+    await API.put(`/drivers/${id}`, updatedDriver);
+    setDrivers((prev) =>
+      prev.map((driver) => (driver.id === id ? { ...driver, ...updatedDriver } : driver))
     );
     toast.success("updated successfully");
-     navigate("/carriers");
+     navigate("/drivers");
   } catch (err) {
     toast.error(err.response?.data?.message || err.message || "update error");
   }
 };
 
 
-const handleSubmit = (carrier) => {
-  if (carrier.id) {
-    handleUpdateCarrier(carrier.id, carrier);
+const handleSubmit = (driver) => {
+  if (driver.id) {
+    handleUpdateDriver(driver.id, driver);
   } else {
-    handleAddCarrier(carrier);
+    handleAddDriver(driver);
   }
 };
 
@@ -109,10 +111,12 @@ const handleSubmit = (carrier) => {
         { name: "name", label: "Name" },
         { name: "dimensions", label: "Dimensions" },
         { name: "payload", label: "Payload" },
+        { name: "license_plate", label: "Picense Plate" },
         { name: "phone", label: "Phone" },
         { name: "zip", label: "ZIP" },
         { name: "date", label: "Date", type: "datetime-local" }, // ⏱️ შეიცვალა "date" → "datetime-local"
         { name: "insurance_date", label: "Insurance Date", type: "datetime-local" },
+        { name: "registration_date", label: "Registration Date", type: "datetime-local" },
         { name: "comments", label: "Comments" },
         { name: "email", label: "Email", type: "email" },
         { name: "emergency", label: "Emergency" },
@@ -166,11 +170,11 @@ const handleSubmit = (carrier) => {
             onClick={() => handleSubmit(formData)}
             className="col-span-full bg-blue-600 hover:bg-blue-700 text-white font-semibold py-2 px-6 rounded"
           >
-            {isEditing ? "Update Carrier" : "Add Carrier"}
+            {isEditing ? "Update Driver" : "Add Driver"}
           </button>
 
     </form>
   );
 };
 
-export default CarrierForm;
+export default DriverForm;

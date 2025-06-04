@@ -13,9 +13,11 @@ const run = async () => {
   });
 
   const users = [
+    { name: "Super Admin", email: "sa@mail.com", password: "qwert123", role: "sa" },
     { name: "Admin", email: "admin@mail.com", password: "qwert123", role: "admin" },
     { name: "User", email: "user@mail.com", password: "qwert123", role: "user" },
-    { name: "Super Admin", email: "sa@mail.com", password: "qwert123", role: "sa" },
+    { name: "human recources", email: "hr@mail.com", password: "qwert123", role: "hr" },
+   
   ];
 
   for (const user of users) {

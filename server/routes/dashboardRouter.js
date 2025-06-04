@@ -1,5 +1,5 @@
 import express from "express";
-import { updateDashboardFields, getDashboardData ,reserveCarrier} from "../controllers/dashboardController.js"; // Controllers
+import { updateDashboardFields, getDashboardData ,reserveDriver} from "../controllers/dashboardController.js"; // Controllers
 import { verifyToken, requireRole } from "../middleware/authMiddleware.js"; // Middleware
 
 const router = express.Router();
@@ -10,6 +10,6 @@ router.get("/", verifyToken, requireRole(["admin", "user", "sa"]), getDashboardD
 // Dashboard Update Route
 router.put("/:id", verifyToken, requireRole(["admin", "sa", "user"]), updateDashboardFields); // Update dashboard fields
 
-router.post("/reserve", verifyToken, requireRole(["admin", "sa", "user"]),  reserveCarrier);
+router.post("/reserve", verifyToken, requireRole(["admin", "sa", "user"]),  reserveDriver);
 
 export default router;

@@ -14,11 +14,13 @@ const Login = () => {
     e.preventDefault(); // პრევენთ გავაკეთოთ form-ის დეფოლტ ქცევას
     try {
       const res = await API.post("/auth/login", { email, password });
-      login(res.data.role, res.data.email);
+      login(res.data.role, res.data.email, res.data.name); // AuthContext-ში როლის, ელფოსტის და სახელის შენახვა
 
       if (["admin", "sa", "user"].includes(res.data.role)) {
         navigate("/dashboard");
-      } else {
+      }else if (res.data.role === "hr") {
+        navigate("/hr");  
+      }else {
         navigate("/login");
       }
     } catch (err) {
