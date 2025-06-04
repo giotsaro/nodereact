@@ -45,6 +45,15 @@ app.get("/", (req, res) => {
   res.send("API is running...");
 });
 
+
+app.use((req, res, next) => {
+    console.log(`Request from IP: ${req.ip}`);
+    console.log(`Origin: ${req.headers.origin}`);
+ 
+    next();
+});
+
+
 app.use("/api/auth", authRoutes);
 app.use("/api/users", UsersRouter);
 app.use("/api/drivers", driverRouter);
@@ -55,10 +64,6 @@ app.use("/api/online", onlineRouter);
 driverInsuranceCron(io);
 
 
-app.use((req, res, next) => {
-    console.log(`Request from IP: ${req.ip}`);
-    next();
-});
 
 
 // Socket.IO connection

@@ -1,8 +1,12 @@
 # Node modules
 node_modules/
+client/node_modules/
+# Node modules in server directory
+server/node_modules/
 
+გიტ
 
-
+ 
 # Logs
 logs
 *.log
