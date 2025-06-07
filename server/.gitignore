@@ -1,9 +1,8 @@
 # Node modules
-server/node_modules/
-client/node_modules/
-client/node_modules/
-server/indexcopy.js
-server/indexcopy2.js
+node_modules
+node_modules
+indexcopy.js
+indexcopy2.js
 # Node modules in server directory
 
 

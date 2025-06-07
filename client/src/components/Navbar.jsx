@@ -59,11 +59,16 @@ const Navbar = () => {
                 <Link to="/hr" className={linkClass}>
                   HR
                 </Link>
+                
                 <Link to="/drivers" className={linkClass}>
                   Drivers
                 </Link>
                 <Link to="/groups" className={linkClass}>
                   Groups
+                </Link>
+               
+                <Link to="/billing" className={linkClass}>
+                  Billing 
                 </Link>
               </>
             )}

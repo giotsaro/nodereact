@@ -218,7 +218,16 @@ useEffect(() => {
 
 
 
+
+
+
+/////////////////////////////////////////////////////////////////////////////////////////////////////
+
+
+
+
   return (
+    <>
     <div className="max-w-7xl mx-auto p-6 dark:bg-gray-900 dark:text-white min-h-screen">
       <h1 className="text-3xl font-bold mb-6">Dashboard</h1>
 
@@ -331,7 +340,7 @@ useEffect(() => {
       </div>
     
       <div className="overflow-x-visible ">
-        <table className="w-full table-auto border-collapse text-center bg-gray-300 dark:bg-gray-800">
+        <table className="w-full  table-auto border-collapse text-center bg-gray-300 dark:bg-gray-800">
           <thead>
             <tr className="bg-blue-500 dark:bg-gray-700 text-white">
               <th className="p-3 text-center">Unit</th>
@@ -363,7 +372,7 @@ useEffect(() => {
                 key={driver.id}
                 className={`transition-all ${
                   driver.reserved_by
-                    ? "bg-yellow-600 dark:bg-yellow-700 dark:hover:bg-yellow-600"
+                    ? "bg-yellow-600 dark:bg-yellow-700 dark:hover:bg-yellow-600 hover:bg-yellow-500"
                     : "dark:bg-gray-700"
                 } border-t dark:border-gray-800 text-gray-800 dark:text-gray-100 hover:bg-gray-400 dark:hover:bg-gray-600`}
               >
@@ -404,23 +413,22 @@ useEffect(() => {
 
         <td className="p-2">{driver.date}</td>
         <td className="p-2">
-          {/* Availability */}
-          <span
-            className={`text-xs font-semibold px-2.5 py-0.5 rounded ${
-              driver.available ? "bg-green-500 text-white-800" : "bg-red-500 text-white"
-            }`}
-          >
-            {driver.available ? "Available" : "Unavailable"}
-          </span>
-          
-          {/* Load status */}
-          <span
-            className={`text-xs font-semibold px-2.5 py-0.5 rounded mt-1 ${
-              driver.onload ? "bg-amber-200 text-orange-500" : "bg-green-500 text-white"
-            }`}
-          >
-            {driver.onload ? "Onload" : "Free"}
-          </span>
+      <p
+  className={`text-xs font-semibold px-2.5 py-0.5 rounded ${
+    driver.available && !driver.onload
+      ? "bg-green-500 text-white"         // Available
+      : driver.onload
+      ? "bg-amber-200 text-orange-500"    // Onload
+      : "bg-red-500 text-white"           // Unavailable
+  }`}
+>
+  {driver.available && !driver.onload
+    ? "Available"
+    : driver.onload
+    ? "Onload"
+    : "Unavailable"}
+</p>
+
           
         {/* Insurance Expiration */}
         <p className={`text-xs font-semibold px-2.5 py-0.5 rounded mt-1 ${
@@ -460,13 +468,13 @@ useEffect(() => {
                                  )}
                 <td className="p-2">{driver.distance}</td>
                 <td className="p-2 space-y-1">
-                  <button
+                  <Link
                     onClick={() => openModal(driver)}
                     className="text-blue-600 hover:text-blue-800 px-2 py-1 font-medium block w-full text-left"
                   >
                     Edit
-                  </button>
-                  <button
+                  </Link>
+                  <Link
                     onClick={() => handleReserve(driver.id)}
                     className={`${
                       driver.reserved_by 
@@ -475,7 +483,7 @@ useEffect(() => {
                     } px-2 py-1 font-medium block w-full text-left`}
                   >
                     {driver.reserved_by ? "Cancel" : "Reserve"}
-                  </button>
+                  </Link>
                   {driver.reserved_by && (
                     <div className="mt-1 text-sm text-green-800 dark:text-green-300">
                       <div>
@@ -569,7 +577,7 @@ useEffect(() => {
         checked={selectedDriver.onload === 1}
         onChange={() => {
           setSelectedDriver({
-            ...selectedCarrier,
+            ...selectedDriver,
             onload: selectedDriver.onload === 1 ? 0 : 1,
           });
         }}
@@ -665,6 +673,14 @@ useEffect(() => {
 
       )}
     </div>
+
+    
+    
+
+
+
+
+    </>
   );
 };
 

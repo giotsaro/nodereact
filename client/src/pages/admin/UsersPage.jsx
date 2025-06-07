@@ -198,7 +198,7 @@ const handleUpdateUser = async () => {
       <h2 className="text-3xl font-bold mb-6 text-center">User Management</h2>
 
       {/* Form */}
-      <div className="bg-white dark:bg-gray-800 shadow-md rounded-lg p-6 mb-8">
+      <div className="bg-white dark:bg-gray-800 text-sm shadow-md rounded-lg p-6 mb-8">
         <h3 className="text-xl font-semibold mb-4">
           {editingUser ? "Edit User" : "Add New User"}
         </h3>
@@ -228,7 +228,7 @@ const handleUpdateUser = async () => {
           <select
             value={role}
             onChange={(e) => setRole(e.target.value)}
-            className="p-2 rounded border border-gray-300 dark:border-gray-600 dark:bg-gray-700"
+            className="p-2 rounded border  text-sm border-gray-300 dark:border-gray-600 dark:bg-gray-700"
           >
             <option value="user">User</option>
             <option value="hr">HR</option>
@@ -236,27 +236,7 @@ const handleUpdateUser = async () => {
           </select>
         </div>
 
-       {/* Group Selection */}
-{/* <div className="mt-4">
-  <h4 className="font-semibold mb-2">Assign Groups:</h4>
-  <select
-  multiple
-  value={selectedGroups}
-  onChange={(e) =>
-    setSelectedGroups(
-      Array.from(e.target.selectedOptions, (option) => parseInt(option.value))
-    )
-  }
-  className={`w-full p-2 border rounded dark:bg-gray-700 dark:border-gray-600 `}
->
-    {groups.map((group) => (
-      <option key={group.id} value={group.id}>
-        {group.name}
-      </option>
-    ))}
-  </select>
-  
-</div> */}
+
 
 
 <div className="mt-4 ">

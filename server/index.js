@@ -11,6 +11,8 @@ import dashboardRouter from "./routes/dashboardRouter.js";
 import groupRouter from "./routes/groupRouter.js";
 import driverInsuranceCron from "./cron/driverInsurance.js";
 import onlineRouter from "./routes/onlineRouter.js";
+import hrRouter from "./routes/hrRouter.js";
+import billingRouter from "./routes/billingRouter.js";
 
 
 
@@ -54,6 +56,8 @@ app.use("/api/drivers", driverRouter);
 app.use("/api/dashboard", dashboardRouter);
 app.use("/api/groups",groupRouter );
 app.use("/api/online", onlineRouter);
+app.use("/api/hr" , hrRouter);
+app.use("/api/billing", billingRouter);
 
 driverInsuranceCron(io);
 

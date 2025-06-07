@@ -178,7 +178,7 @@ const DriversPage = () => {
                   </div>
                    <hr />
                   <div>
-                    <strong>License Plat.</strong> {driver.license_plate}
+                    <strong>License Plate</strong> {driver.license_plate}
                   </div>
                    <hr />
                 </td>

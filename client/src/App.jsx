@@ -14,6 +14,10 @@ import { Toaster } from 'sonner';
 import NotFound from "./pages/NotFound";
 import Online from "./pages/admin/OnlineUsers";
 import HRDashboard from "./pages/hr/HR";
+import RoleRedirect from "./pages/RoleRedirect";
+
+import BillingPage from "./pages/admin/BillingPage";
+import BillingForm from "./pages/admin/BillingForm";
 
 function App() {
   return (
@@ -24,19 +28,25 @@ function App() {
           <Route path="/login" element={ <PublicRoute><Login /></PublicRoute> } />
           <Route path="/register" element={ <PublicRoute><Register /></PublicRoute> } />
 
-
+          <Route path="/"element={<PrivateRoute allowedRoles={["admin", "sa", "user", "hr"]}><RoleRedirect /></PrivateRoute> }/>
           <Route path="/dashboard" element={ <PrivateRoute allowedRoles={["admin", "sa", "user"]}><Dashboard /></PrivateRoute> } />
           <Route path="/users" element={ <PrivateRoute allowedRoles={["admin", "sa"]}><UsersPage /></PrivateRoute> } />
           <Route path="/drivers" element={ <PrivateRoute allowedRoles={["admin", "sa","hr"]}><DriversPage /></PrivateRoute> } />
           <Route path="/drivers/new" element={ <PrivateRoute allowedRoles={["admin", "sa","hr"]}><NewDriver /></PrivateRoute> } />
           <Route path="/drivers/:id/edit" element={ <PrivateRoute allowedRoles={["admin", "sa","hr"]}><EditDriveer /></PrivateRoute> } />
-          <Route path="/" element={<div className="text-3xl text-blue-600 font-bold underline">საწყისი გვერდი</div>} />
+
+          
 
           <Route path="/groups" element={ <PrivateRoute allowedRoles={["admin", "sa","hr"]}><GroupPage /></PrivateRoute> } />
           <Route path="/online" element={ <PrivateRoute allowedRoles={["admin", "sa"]}><Online /></PrivateRoute> } /> 
 
           <Route path="/hr" element={ <PrivateRoute allowedRoles={["hr","admin","sa"]}><HRDashboard /></PrivateRoute> } />
+   
 
+
+          <Route path="/billing" element={ <PrivateRoute allowedRoles={["admin", "sa","hr"]}><BillingPage /></PrivateRoute> } />
+          <Route path="/billing/:id/edit" element={ <PrivateRoute allowedRoles={["admin", "sa","hr"]}><BillingForm /></PrivateRoute> } />
+          <Route path="/billing/new" element={ <PrivateRoute allowedRoles={["admin", "sa","hr"]}><BillingForm /></PrivateRoute> } />
 
            <Route path="*" element={<NotFound />} />
       </Routes>
