@@ -31,6 +31,8 @@ export const io = new Server(server, {
   cors: {
     origin: "https://caucasusgroup.com",
     credentials: true,
+
+
   },
 });
 
@@ -38,7 +40,12 @@ export const io = new Server(server, {
 app.use(cors({
   origin: "https://caucasusgroup.com",
   credentials: true,
+ 
+
 }));
+
+
+
 app.use(express.json());
 app.use(cookieParser());
 
