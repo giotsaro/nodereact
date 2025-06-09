@@ -212,19 +212,29 @@ drivers = drivers.map((driver) => {
 
 
     // Load associated group names for each driver
-    for (let driver of drivers) {
-      const [groupRows] = await db.query(
-        `SELECT g.name, g.description 
-         FROM driver_groups cg 
-         JOIN groups g ON cg.group_id = g.id 
-         WHERE cg.driver_id = ?`,
-        [driver.id]
-      );
-      driver.groups = groupRows.map((row) => ({
-        name: row.name,
-        description: row.description,
-      }));
-    }
+// Load associated group names for each driver (only for admin or sa)
+if (userRole === "admin" || userRole === "sa" || userRole === "hr") {
+  for (let driver of drivers) {
+    const [groupRows] = await db.query(
+      `SELECT g.name, g.description 
+       FROM driver_groups cg 
+       JOIN groups g ON cg.group_id = g.id 
+       WHERE cg.driver_id = ?`,
+      [driver.id]
+    );
+    driver.groups = groupRows.map((row) => ({
+      name: row.name,
+      description: row.description,
+    }));
+  }
+} else {
+  // For 'user' role, send empty groups array
+  drivers = drivers.map(driver => ({
+    ...driver,
+    groups: []
+  }));
+}
+
 
     res.json(drivers);
   } catch (err) {
