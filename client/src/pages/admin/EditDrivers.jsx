@@ -17,7 +17,7 @@ const EditDriver = () => {
       const response = await API.get(`/drivers/${id}`);
       setDriverData(response.data);
     } catch (error) {
-      console.error("❌ Error fetching driver:", error);
+       toast.error("error fetching billing data: " + (err.response?.data?.message || err.message || "Server error"));
     }
   };
 
@@ -26,7 +26,7 @@ const EditDriver = () => {
       await API.put(`/drivers/${id}`, formData);
       navigate("/drivers"); // დაბრუნება drivers გვერდზე
     } catch (error) {
-      console.error("❌ Error updating driver:", error);
+      toast.error("error fetching billing data: " + (err.response?.data?.message || err.message || "Server error"));
     }
   };
 

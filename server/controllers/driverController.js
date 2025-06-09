@@ -104,33 +104,58 @@ export const addDriver = async (req, res) => {
 
   try {
     const [result] = await db.query(
-      `INSERT INTO drivers 
-        (unit, name, dimensions, payload,  license_plate, phone, location, zip, date, insurance_date,registration_date, comments, email, emergency)
-        VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)`,
-      [
-        unit,
-        name,
-        dimensions,
-        payload,
-        license_plate,
-        phone,
-        location,
-        zip,
-        date,
-        insurance_date,
-        registration_date,
-        comments,
-        email,
-        emergency,
-      ]
-    );
+  `INSERT INTO drivers 
+    (unit, name, dimensions, payload, license_plate, phone, location, zip, date, insurance_date, registration_date, comments, email, emergency)
+    VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)`, // აქ 14 ?
+  [
+    unit,
+    name,
+    dimensions,
+    payload,
+    license_plate,
+    phone,
+    location,
+    zip,
+    date,
+    insurance_date,
+    registration_date,
+    comments,
+    email,
+    emergency,
+  ]
+);
+
 
     const driverId = result.insertId;
 
- if (Array.isArray(groups) && groups.length > 0) {
-  const values = groups.map((groupId) => [driverId, groupId]);
-  await db.query("INSERT INTO driver_groups (driver_id, group_id) VALUES ?", [values]);
+if (Array.isArray(groups) && groups.length > 0) {
+  let values = [];
+
+  if (typeof groups[0] === "object" && groups[0] !== null && "id" in groups[0]) {
+    values = groups.map(g => [driverId, g.id]);
+  } else {
+    values = groups.map(id => [driverId, id]);
+  }
+
+  if (values.length > 0) {
+    await db.query("INSERT INTO driver_groups (driver_id, group_id) VALUES ?", [values]);
+  }
 }
+
+
+// გამოუშვი ახალი ინფო სოკეტით
+io.emit("driverAdded", {
+  id: driverId,
+  unit,
+  name,
+  zip,
+  date,
+  insurance_date,
+  registration_date,
+  comments,
+});
+
+
 
 
     res.status(201).json({ message: "Driver added", id: driverId });
@@ -157,10 +182,10 @@ export const updateDriver = async (req, res) => {
     comments,
     email,
     emergency,
-    groups,
+    groups ,
   } = req.body;
 
-  //console.log(req.body);
+ console.log(groups);
 
   let location = "";
 
@@ -172,23 +197,38 @@ export const updateDriver = async (req, res) => {
     location = `unknown`;
   }
 
-  try {
-    await db.query(
-      `UPDATE drivers SET
-        unit = ?, name = ?, dimensions = ?, payload = ?, license_plate = ?, phone = ?, location = ?, zip = ?, date = ?, insurance_date = ?, registration_date = ?, comments = ?, email = ?, emergency = ?
-      WHERE id = ?`,
-      [unit, name, dimensions, payload, license_plate, phone, location, zip, date, insurance_date,registration_date, comments, email, emergency, req.params.id]
-    );
+try {
+  await db.query(
+    `UPDATE drivers SET
+      unit = ?, name = ?, dimensions = ?, payload = ?, license_plate = ?, phone = ?, location = ?, zip = ?, date = ?, insurance_date = ?, registration_date = ?, comments = ?, email = ?, emergency = ?
+    WHERE id = ?`,
+    [unit, name, dimensions, payload, license_plate, phone, location, zip, date, insurance_date, registration_date, comments, email, emergency, req.params.id]
+  );
 
-    // მხოლოდ **თუ ახალი `groups` არსებობს**, განვაახლებთ 
-    if (Array.isArray(groups) && groups.length > 0) {
-      // წავშალოთ ძველი `group` კავშირები
-      await db.query(`DELETE FROM driver_groups WHERE driver_id = ?`, [req.params.id]);
+  console.log(groups.map(g => g.id)); // ✅ OK
 
-      // დავამატოთ ახალი `group` კავშირები
-      const values = groups.map((groupId) => [req.params.id, groupId]);
+  // თუ groups არსებობს
+if (Array.isArray(groups)) {
+  await db.query(`DELETE FROM driver_groups WHERE driver_id = ?`, [req.params.id]);
+
+  let values = [];
+
+  if (groups.length > 0) {
+    // თუ მოდის [{ id: 1 }, { id: 2 }]
+    if (typeof groups[0] === "object" && groups[0] !== null && "id" in groups[0]) {
+      values = groups.map(g => [req.params.id, g.id]);
+    } else {
+      // თუ მოდის [1, 2]
+      values = groups.map(id => [req.params.id, id]);
+    }
+
+    if (values.length > 0) {
       await db.query("INSERT INTO driver_groups (driver_id, group_id) VALUES ?", [values]);
     }
+  }
+}
+
+
 
     io.emit("driverUpdated", {
       id: req.params.id,

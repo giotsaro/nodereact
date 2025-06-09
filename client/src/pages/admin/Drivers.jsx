@@ -113,7 +113,7 @@ const DriversPage = () => {
 
 
       <div className="mb-4 text-lg font-medium">
-       Drivers: {fetchDrivers.length}
+       Drivers: {drivers.length}
       </div>
 
       <div className="overflow-x-visible">

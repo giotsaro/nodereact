@@ -29,14 +29,14 @@ const server = http.createServer(app);
 // Setup Socket.IO
 export const io = new Server(server, {
   cors: {
-    origin: "http://localhost:5173",
+    origin: "https://caucasusgroup.com",
     credentials: true,
   },
 });
 
 // Middleware
 app.use(cors({
-  origin: "http://localhost:5173",
+  origin: "https://caucasusgroup.com",
   credentials: true,
 }));
 app.use(express.json());

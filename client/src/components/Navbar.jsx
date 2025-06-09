@@ -24,7 +24,7 @@ const Navbar = () => {
     <nav className="p-4 bg-gray-900 text-black dark:text-white flex justify-between items-center shadow-md">
       {/* Logo/Home */}
       <Link to={getHomeLink()} className="text-xl text-white font-bold">
-        MyApp
+        Caucasus Group
       </Link>
 
       {/* Right side links */}
