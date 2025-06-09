@@ -12,7 +12,7 @@ const Dashboard = () => {
 
  
 
-  const { role,user } = useAuth();
+  const { role} = useAuth();
   const navigate = useNavigate();
   const [drivers, setDrivers] = useState([]);
   const [selectedDriver, setSelectedDriver] = useState(null);
@@ -178,26 +178,29 @@ const handleClearFilters = () => {
     return () => window.removeEventListener("keydown", handleKeyDown);
   }, [isModalOpen, handleKeyDown]);
 
-   
-useEffect(() => {
-    const fetchGroups = async () => {
-      try {
-        if (user?.role === 'admin' || user?.role === 'sa') { // მხოლოდ admin და sa ჩამოტვირთავენ
-          const res = await API.get("/groups");
-          setGroupsList(res.data);
-        } else {
-          setGroupsList([]); // user-ს ცარიელი
-        }
-      } catch (error) {
-        console.error(error);
-      }
-    };
 
-    // მხოლოდ მაშინ გამოიძახებს, როცა user არსებობს
-    if (user?.role) {
-      fetchGroups();
+
+useEffect(() => {
+  const fetchGroups = async () => {
+    try {
+      if (role === "admin" || role === "sa") {
+        const res = await API.get("/groups");
+        setGroupsList(res.data);
+      } else {
+        setGroupsList([]);
+      }
+    } catch (error) {
+      console.error(error);
     }
-  }, [user?.role]);
+  };
+
+  if (role) {
+    fetchGroups();
+  } else {
+    // თუ როლი არ არის - ცარიელ სიას ან რაიმე ლოგიკას დააყენებ
+    setGroupsList([]);
+  }
+}, [role]);
 
 
 useEffect(() => {

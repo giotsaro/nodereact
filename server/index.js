@@ -28,14 +28,14 @@ const server = http.createServer(app);
 // Setup Socket.IO
 export const io = new Server(server, {
   cors: {
-    origin: "http://localhost:5173", // შეცვალე საჭიროების შემთხვევაში
+    origin: "https://caucasusgroup.com", // შეცვალე საჭიროების შემთხვევაში
     credentials: true,
   },
 });
 
 // Middleware
 app.use(cors({
-  origin: "http://localhost:5173", // შეცვალე საჭიროების შემთხვევაში
+  origin: "https://caucasusgroup.com", // შეცვალე საჭიროების შემთხვევაში
   credentials: true,
 }));
 app.use(express.json());
