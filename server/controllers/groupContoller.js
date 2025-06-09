@@ -1,4 +1,4 @@
-import { db } from "../config/db.js";
+import { db } from "../config/config.js";
 
 // ყველა ჯგუფის წამოღება
 export const getGroups = async (req, res) => {

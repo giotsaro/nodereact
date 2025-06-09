@@ -1,6 +1,6 @@
 import cron from "node-cron";
 import { DateTime } from "luxon";
-import { db } from "../config/db.js";
+import { db } from "../config/config.js";
 
 export default function driverInsuranceCron(io) {
   cron.schedule("0 */2 * * * *", async () => {
@@ -62,7 +62,7 @@ export default function driverInsuranceCron(io) {
         }
       }
 
-      //console.log("[CRON] Driver expiration checks completed.");
+      console.log("[CRON] Driver expiration checks completed.");
     } catch (err) {
       console.error("[CRON] Error checking expirations:", err.message);
     }

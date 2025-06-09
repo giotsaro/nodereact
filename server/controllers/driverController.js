@@ -1,5 +1,5 @@
 import e from "express";
-import { db } from "../config/db.js";
+import { db } from "../config/config.js";
 import { io } from "../index.js";
 import zipcodes from "zipcodes";
 

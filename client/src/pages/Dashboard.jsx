@@ -12,7 +12,7 @@ const Dashboard = () => {
 
  
 
-  const { role } = useAuth();
+  const { role,user } = useAuth();
   const navigate = useNavigate();
   const [drivers, setDrivers] = useState([]);
   const [selectedDriver, setSelectedDriver] = useState(null);
@@ -178,18 +178,26 @@ const handleClearFilters = () => {
     return () => window.removeEventListener("keydown", handleKeyDown);
   }, [isModalOpen, handleKeyDown]);
 
+   
+useEffect(() => {
+    const fetchGroups = async () => {
+      try {
+        if (user?.role === 'admin' || user?.role === 'sa') { // მხოლოდ admin და sa ჩამოტვირთავენ
+          const res = await API.get("/groups");
+          setGroupsList(res.data);
+        } else {
+          setGroupsList([]); // user-ს ცარიელი
+        }
+      } catch (error) {
+        console.error(error);
+      }
+    };
 
-  useEffect(() => {
-  const fetchGroups = async () => {
-    try {
-      const res = await API.get("/groups");
-      setGroupsList(res.data);
-    } catch (error) {
-      console.error(error);
+    // მხოლოდ მაშინ გამოიძახებს, როცა user არსებობს
+    if (user?.role) {
+      fetchGroups();
     }
-  };
-  fetchGroups();
-}, []);
+  }, [user?.role]);
 
 
 useEffect(() => {

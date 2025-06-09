@@ -2,7 +2,7 @@ import express from "express";
 import { getDrivers, getDriverById, addDriver, updateDriver, deleteDriver } from "../controllers/driverController.js";
 import { updateDashboardFields ,getDashboardData } from "../controllers/dashboardController.js"; // ახალი ფუნქცია
 import { verifyToken, requireRole } from "../middleware/authMiddleware.js";
-import { db } from "../config/db.js"; // საჭიროა `deleted_drivers` route-ისთვის
+import { db } from "../config/config.js"; // საჭიროა `deleted_drivers` route-ისთვის
 const router = express.Router();
 
 // 🔐 წაშლილი გადამზიდების ნახვა მხოლოდ `sa` როლისთვის

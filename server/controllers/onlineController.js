@@ -1,6 +1,6 @@
 //onlineController.js
 
-import { db } from "../config/db.js";
+import { db } from "../config/config.js";
 
 // დაამატე ან განაახლე socketId კონკრეტული user-ისთვის
 export const saveSocketId = async (userId, socketId) => {
