@@ -44,7 +44,7 @@ app.use(cookieParser());
 
 // Routes
 app.get("/", (req, res) => {
-  res.send("API is running...");
+  res.send("v2 API is running...");
 });
 
 
