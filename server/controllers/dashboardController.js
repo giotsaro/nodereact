@@ -213,7 +213,7 @@ drivers = drivers.map((driver) => {
 
     // Load associated group names for each driver
 // Load associated group names for each driver (only for admin or sa)
-if (userRole === "admin" || userRole === "sa" || userRole === "hr") {
+if (userRole === "admin" || userRole === "sa" || userRole === "hr" || userRole === "user") {
   for (let driver of drivers) {
     const [groupRows] = await db.query(
       `SELECT g.name, g.description 

@@ -183,24 +183,34 @@ const handleClearFilters = () => {
 useEffect(() => {
   const fetchGroups = async () => {
     try {
+      let res;
+
       if (role === "admin" || role === "sa") {
-        const res = await API.get("/groups");
-        setGroupsList(res.data);
+        res = await API.get("/groups");
+      } else if (role === "user") {
+        res = await API.get("/groups/getGroupsOfUser");
       } else {
         setGroupsList([]);
+        return;
       }
+
+      setGroupsList(res.data);
     } catch (error) {
-      console.error(error);
+      console.error("Error fetching groups:", error);
+      setGroupsList([]);
     }
   };
 
   if (role) {
     fetchGroups();
   } else {
-    // თუ როლი არ არის - ცარიელ სიას ან რაიმე ლოგიკას დააყენებ
     setGroupsList([]);
   }
 }, [role]);
+
+
+
+
 
 
 useEffect(() => {
@@ -246,7 +256,7 @@ useEffect(() => {
  <div className="bg-gray-400 dark:bg-gray-800 shadow-md rounded-lg p-6 mb-8">
   <div
     className={`grid ${
-      role === "admin" || role === "sa"
+      role === "admin" || role === "sa"|| role === "user"
         ? "gap-4 sm:grid-cols-4"
         : "gap-3 sm:grid-cols-3"
     }`}
@@ -285,7 +295,7 @@ useEffect(() => {
       }`}
     />
 
-    {(role === "admin" || role === "sa") && (
+    {(role === "admin" || role === "sa" || role === "user" ) && (
       <select
         value={group}
         onChange={(e) => setGroup(e.target.value)}
@@ -371,6 +381,7 @@ useEffect(() => {
    <th className="p-3 text-center">Group</th>
     )}
               <th className="p-3 text-center">Distance</th>
+              <th className="p-3 text-center">Group</th>
               <th className="p-3 text-center">Actions</th>
             </tr>
           </thead>
@@ -469,15 +480,16 @@ useEffect(() => {
         </td>
                 <td className="p-2">{driver.comments}</td>
                 <td className="p-2">{driver.emergency}</td>
-                 {(role === "admin" || role === "sa") && (
-                              <td>
+                
+                   
+
+                      
+                <td className="p-2">{driver.distance}</td>
+                           <td>
                       {driver.groups?.length > 0
                         ? driver.groups.map(group => group.name).join(", ")
                         : "No groups"}
                     </td>
-
-                                 )}
-                <td className="p-2">{driver.distance}</td>
                 <td className="p-2 space-y-1">
                   <Link
                     onClick={() => openModal(driver)}

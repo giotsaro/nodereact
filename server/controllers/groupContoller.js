@@ -60,3 +60,16 @@ export const deleteGroup = async (req, res) => {
   }
 };
 
+export const getGroupsOfUser = async (req, res) => {
+
+  const userId = req.user.id; // Assuming user ID is stored in req.user
+  try {
+    const [groups] = await db.query(
+      "SELECT g.id, g.name, g.description FROM `groups` g JOIN user_groups ug ON g.id = ug.group_id WHERE ug.user_id = ?",
+      [userId]
+    );
+    res.status(200).json(groups);
+  } catch (err) {
+    res.status(500).json({ message: "Server error" });
+  }
+}
