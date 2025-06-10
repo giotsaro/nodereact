@@ -73,7 +73,7 @@ export const getDashboardData = async (req, res) => {
           SELECT DISTINCT c.*, u.name AS reserved_by_name
           FROM drivers c
           LEFT JOIN users u ON c.reserved_by = u.id
-          JOIN drivers_groups cg ON c.id = cg.driver_id
+          JOIN driver_groups cg ON c.id = cg.driver_id
           JOIN groups g ON cg.group_id = g.id
           WHERE g.name = ?
           `,

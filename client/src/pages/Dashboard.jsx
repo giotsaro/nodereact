@@ -377,9 +377,6 @@ useEffect(() => {
               <th className="p-3 text-center">Comments</th>
             
               <th className="p-3 text-center">Emergency</th>
-                 {(role === "admin" || role === "sa") && (
-   <th className="p-3 text-center">Group</th>
-    )}
               <th className="p-3 text-center">Distance</th>
               <th className="p-3 text-center">Group</th>
               <th className="p-3 text-center">Actions</th>
@@ -485,7 +482,7 @@ useEffect(() => {
 
                       
                 <td className="p-2">{driver.distance}</td>
-                           <td>
+                <td>
                       {driver.groups?.length > 0
                         ? driver.groups.map(group => group.name).join(", ")
                         : "No groups"}
