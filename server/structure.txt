@@ -1,0 +1,7 @@
+server/                 ← Node.js API & Socket.IO
+  ├── index.js          ← main backend file
+  ├── .env              ← environment variables
+  ├── routes/           ← auth, user, etc.
+  ├── middleware/       ← JWT middleware
+  ├── controllers/      ← logic separated
+  └── config/           ← MySQL config
