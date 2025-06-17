@@ -3,7 +3,7 @@ import express from "express";
 import cors from "cors";
 import cookieParser from "cookie-parser";
 import dotenv from "dotenv";
-import path from "path";
+
 import http from "http";
 import { Server } from "socket.io";
 
@@ -28,16 +28,16 @@ const server = http.createServer(app);
 // Setup Socket.IO
 export const io = new Server(server, {
   cors: {
-   // origin: "https://caucasusgroup.com", // შეცვალე საჭიროების შემთხვევაში
-    origin: "http://localhost:5173", // შეცვალე საჭიროების შემთხვევაში
+    origin: "https://new.caucasusgroup.com", // შეცვალე საჭიროების შემთხვევაში
+   // origin: "http://localhost:5173", // შეცვალე საჭიროების შემთხვევაში
     credentials: true,
   },
 });
 
 // Middleware
 app.use(cors({
-   origin: "http://localhost:5173",
-  //origin: "https://caucasusgroup.com", // შეცვალე საჭიროების შემთხვევაში
+   //origin: "http://localhost:5173",
+  origin: "https://new.caucasusgroup.com", // შეცვალე საჭიროების შემთხვევაში
   credentials: true,
 }));
 app.use(express.json());

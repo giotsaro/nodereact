@@ -3,8 +3,10 @@ import dotenv from "dotenv";
 import path from "path";
 
 const envFile = process.env.NODE_ENV === "production" ? ".env.production" : ".env.development";
-dotenv.config({ path: path.resolve(process.cwd(), envFile) });
-console.log("🔧 Environment loaded:", envFile);
+//dotenv.config({ path: path.resolve(process.cwd(), envFile) });
+dotenv.config({ path: `.env.${process.env.NODE_ENV}` });
+
+
 
 // DB pool
 const db = mysql
@@ -17,7 +19,7 @@ const db = mysql
 
   })
   .promise();
-  console.log("🔗 Database connected:", process.env.DB_NAME);
+  
 
 const config = {
   port: process.env.PORT || 5000,

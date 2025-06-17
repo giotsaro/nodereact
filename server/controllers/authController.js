@@ -43,7 +43,7 @@ res.cookie("token", token, {
     httpOnly: true,
     sameSite: "None",  // ✅ Cross-Origin-ისთვის
    // sameSite: "strict",
-    secure: process.env.NODE_ENV === "production",
+    secure: true,
     maxAge: 24 * 60 * 60 * 1000,
 });
 

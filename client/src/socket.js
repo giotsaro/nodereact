@@ -4,7 +4,7 @@ import { io } from "socket.io-client";
   withCredentials: true,
 }); */
 
- const socket = io("http://3.71.165.128:5000", {
+ const socket = io("https://3.71.165.128:5000", {
   withCredentials: true,
 }); 
 
