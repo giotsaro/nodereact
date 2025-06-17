@@ -4,10 +4,14 @@ import { io } from "socket.io-client";
   withCredentials: true,
 }); */
 
+ const socket = io("http://3.71.165.128:5000", {
+  withCredentials: true,
+}); 
+
 
  
-  const socket = io("https://bigbro-188810415119.europe-west1.run.app", {
+/*   const socket = io("https://bigbro-188810415119.europe-west1.run.app", {
 withCredentials: true,
-}); 
+});  */
  
 export default socket;
