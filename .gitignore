@@ -1,14 +1,11 @@
 # Node modules
-node_modules
-node_modules
-indexcopy.js
-indexcopy2.js
-# Node modules in server directory
+server/node_modules/
 
-
-
-
- 
+client/node_modules/
+client/src/api/
+socket.js
+axios.js
+index.js
 # Logs
 logs
 *.log
@@ -17,7 +14,6 @@ yarn-debug.log*
 yarn-error.log*
 pnpm-debug.log*
 lerna-debug.log*
-
 node_modules
 dist
 dist-ssr

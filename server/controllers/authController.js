@@ -56,7 +56,7 @@ res.cookie("token", token, {
     });
   } catch (err) {
     //console.error("❌ Login Error:", err);
-    res.status(500).json({ message: "Server error" });
+    res.status(500).json({ message: "Server error" + err.message });
   }
 };
 

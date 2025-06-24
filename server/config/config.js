@@ -3,8 +3,10 @@ import dotenv from "dotenv";
 import path from "path";
 
 const envFile = process.env.NODE_ENV === "production" ? ".env.production" : ".env.development";
-//dotenv.config({ path: path.resolve(process.cwd(), envFile) });
-dotenv.config({ path: `.env.${process.env.NODE_ENV}` });
+dotenv.config({ path: path.resolve(process.cwd(), envFile) });
+//dotenv.config({ path: `.env.${process.env.NODE_ENV}` });
+//console.log(`Using environment file: .env.${process.env.NODE_ENV}`);
+console.log(`Using environment file: ${envFile}`);
 
 
 

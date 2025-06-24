@@ -11,6 +11,7 @@ export const updateDashboardFields = async (req, res) => {
   const updates = [];
   const values = [];
 
+
   for (const [field, newValue] of Object.entries(updatedFields)) {
     if (validFields.includes(field)) {
       updates.push(`${field} = ?`);

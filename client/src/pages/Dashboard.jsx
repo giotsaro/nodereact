@@ -7,6 +7,7 @@ import socket from "../socket";
 import { useAuth } from "../context/AuthContext";
 import Timer from "./Timer";
 import { toast } from 'sonner'; 
+import getCurrentDateTime from "../components/DateTimeNow"; // Assuming you have this utility function
 
 
 
@@ -61,26 +62,46 @@ const fetchDrivers = useCallback(async () => {
     }
   }, []);
 
+/*   const getCurrentDateTime = () => {
+  const now = new Date();
+  const year = now.getFullYear();
+  const month = String(now.getMonth() + 1).padStart(2, "0");
+  const day = String(now.getDate()).padStart(2, "0");
+  const hour = String(now.getHours()).padStart(2, "0");
+  const minute = String(now.getMinutes()).padStart(2, "0");
+
+  const newdate = `${year}-${month}-${day}T${hour}:${minute}`
+
+  console.log("Current Date and Time:", newdate);
+  return newdate;
+}; */
+
 // ფუნქცია გარეთ
-const formatDateForInput = (dateStr) => {
+/* const formatDateForInput = (dateStr) => {
   const date = new Date(dateStr);
   const year = date.getFullYear();
   const month = String(date.getMonth() + 1).padStart(2, "0");
   const day = String(date.getDate()).padStart(2, "0");
   const hour = String(date.getHours()).padStart(2, "0");
   const minute = String(date.getMinutes()).padStart(2, "0");
-
+   console.log("Formatted Date for Input:", `${year}-${month}-${day}T${hour}:${minute}`);
   return `${year}-${month}-${day}T${hour}:${minute}`;
-};
+}; */
 
 // მოდალის გამხსნელი
-const openModal = (dirver) => {
+const openModal = (driver) => {
   setSelectedDriver({
-    ...dirver,
-    date: dirver.date ? formatDateForInput(dirver.date) : "",
+    ...driver,
+    date: getCurrentDateTime(),
   });
   setIsModalOpen(true);
 };
+
+
+
+
+
+// მოდალის დახურვა
  const closeModal = () => {
   setSelectedDriver(null);
   setIsModalOpen(false);
@@ -630,16 +651,16 @@ useEffect(() => {
 
 
 
-          <div>
-                <label className="block mb-1 text-sm font-medium">Date and Time:</label>
-           <input
+            <div>
+          <label className="block mb-1 text-sm font-medium">Date and Time:</label>
+          <input
             type="datetime-local"
-            value={selectedDriver.date }
+            value={selectedDriver?.date || ""} // უსაფრთხოდ რომ თავიდან ავიცილოთ undefined
             onChange={(e) => setSelectedDriver({ ...selectedDriver, date: e.target.value })}
             className="w-full p-2 border rounded bg-gray-100 dark:bg-gray-700 dark:text-white"
           />
+        </div>
 
-      </div>
            {/* New Switch Buttons */}
       <div className="flex items-center space-x-4">
   {/* onload switch */}
